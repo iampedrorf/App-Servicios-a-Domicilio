@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1022079070493",
+    "project_id": "app-servicios-domicilio",
+    "storage_bucket": "app-servicios-domicilio.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1022079070493:android:c992ec07dd0a5da1aab1f4",
+        "android_client_info": {
+          "package_name": "com.enersis.app_servicios_a_domicilio"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCVeO2yPFnQ8QDjv4lrhqeh9FXunIQY96w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
