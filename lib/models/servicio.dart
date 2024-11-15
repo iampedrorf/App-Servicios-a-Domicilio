@@ -1,141 +1,156 @@
 import 'package:app_servicios_a_domicilio/models/tecnico.dart';
+import 'articulo.dart';
+import 'cliente.dart';
 
-class Servicio {
+class NuevaOrdenServicio {
   int id;
-  int clienteId;
-  String cliente;
-  int estado;
-  int sucursalId;
-  String sucursal;
-  DateTime fecha;
-  String horario;
-  String tipoServicio;
-  String telefono;
-  String domicilio;
-  ServicioTecnicoModel tecnico;
-  String? vehiculo;
-  String acumulador;
-  String? fotografiaacumulador;
-  String marca;
-  String linea;
-  String modelo;
-  double precio;
-  double descuento;
-  bool requiereTerminal;
-  bool urgente;
-  String canalCaptacion;
-  String observacion;
-  String creadoPor;
-  double longitud;
+  int contactoId;
+  NuevaOrdenContacto contacto;
+  int? negociacionId;
+  String? fechaProgramacion;
+  String calle;
+  String numeroExterno;
+  String? numeroInterno;
+  String colonia;
+  String ciudad;
+  String estado;
   double latitud;
-  DateTime fechaExpiracion; // Nuevo atributo
-  String estatus; // Nuevo atributo (Activo, Rechazado, EnProceso, Terminado)
+  double longitud;
+  String? tipoServicio;
+  String? formaPago;
+  double subtotal;
+  double descuento;
+  double total;
+  String? vehiculoMarca;
+  String? vehiculoModelo;
+  int? vehiculoYear;
+  String? cupon;
+  ServicioTecnicoModel? tecnico;
+  int? centroServicioId;
+  int? tecnicoId;
+  String codigoEstado;
+  DateTime fechaCreacion;
+  String? fechaInicio;
+  String? fechaArribo;
+  String? fechaTermino;
+  String? motivoCancelacion;
+  bool facturado;
+  Articulo articulo;
+  DateTime? fechaLimite;
 
-  Servicio({
-    required this.id,
-    required this.clienteId,
-    required this.cliente,
-    required this.estado,
-    required this.sucursalId,
-    required this.sucursal,
-    required this.fecha,
-    required this.horario,
-    required this.tipoServicio,
-    required this.telefono,
-    required this.domicilio,
-    required this.tecnico,
-    this.vehiculo,
-    required this.acumulador,
-    this.fotografiaacumulador,
-    required this.marca,
-    required this.linea,
-    required this.modelo,
-    required this.precio,
-    required this.descuento,
-    required this.requiereTerminal,
-    required this.urgente,
-    required this.canalCaptacion,
-    required this.observacion,
-    required this.creadoPor,
-    required this.latitud,
-    required this.longitud,
-    required this.fechaExpiracion, // Inicialización del nuevo atributo
-    required this.estatus, // Inicialización del nuevo atributo
-  });
+  NuevaOrdenServicio(
+      {required this.id,
+      required this.contactoId,
+      required this.contacto,
+      this.negociacionId,
+      this.fechaProgramacion,
+      required this.calle,
+      required this.numeroExterno,
+      this.numeroInterno,
+      required this.colonia,
+      required this.ciudad,
+      required this.estado,
+      required this.latitud,
+      required this.longitud,
+      this.tipoServicio,
+      this.formaPago,
+      required this.subtotal,
+      required this.descuento,
+      required this.total,
+      this.vehiculoMarca,
+      this.vehiculoModelo,
+      this.vehiculoYear,
+      this.cupon,
+      this.tecnico,
+      this.centroServicioId,
+      this.tecnicoId,
+      required this.codigoEstado,
+      required this.fechaCreacion,
+      this.fechaInicio,
+      this.fechaArribo,
+      this.fechaTermino,
+      this.motivoCancelacion,
+      required this.facturado,
+      required this.articulo,
+      required this.fechaLimite});
 
-  // Map for insert
   Map<String, dynamic> mapForInsert() {
     return {
       'Id': id,
-      'ClienteId': clienteId,
-      'Cliente': cliente,
+      'ContactoId': contactoId,
+      'Contacto': contacto.toMap(),
+      'NegociacionId': negociacionId,
+      'FechaProgramacion': fechaProgramacion,
+      'Calle': calle,
+      'NumeroExterno': numeroExterno,
+      'NumeroInterno': numeroInterno,
+      'Colonia': colonia,
+      'Ciudad': ciudad,
       'Estado': estado,
-      'SucursalId': sucursalId,
-      'Sucursal': sucursal,
-      'Fecha': fecha.toIso8601String(),
-      'Horario': horario,
-      'TipoServicio': tipoServicio,
-      'Telefono': telefono,
-      'Domicilio': domicilio,
-      'Tecnico': tecnico.toMap(),
-      'Vehiculo': vehiculo,
-      'Acumulador': acumulador,
-      'FotografiaAcumulador': fotografiaacumulador,
-      'Marca': marca,
-      'Linea': linea,
-      'Modelo': modelo,
-      'Precio': precio,
-      'Descuento': descuento,
-      'RequiereTerminal': requiereTerminal,
-      'Urgente': urgente,
-      'CanalCaptacion': canalCaptacion,
-      'Observacion': observacion,
-      'CreadoPor': creadoPor,
       'Latitud': latitud,
       'Longitud': longitud,
-      //'FechaExpiracion': fechaExpiracion.toIso8601String(),
-      'FechaExpiracion': fechaExpiracion,
-      'Estatus': estatus, // Agregado
+      'TipoServicio': tipoServicio,
+      'FormaPago': formaPago,
+      'Subtotal': subtotal,
+      'Descuento': descuento,
+      'Total': total,
+      'VehiculoMarca': vehiculoMarca,
+      'VehiculoModelo': vehiculoModelo,
+      'VehiculoYear': vehiculoYear,
+      'Cupon': cupon,
+      'Tecnico': tecnico?.toMap(),
+      'CentroServicioId': centroServicioId,
+      'TecnicoId': tecnicoId,
+      'CodigoEstado': codigoEstado,
+      'FechaCreacion': fechaCreacion.toIso8601String(),
+      'FechaInicio': fechaInicio,
+      'FechaArribo': fechaArribo,
+      'FechaTermino': fechaTermino,
+      'MotivoCancelacion': motivoCancelacion,
+      'Facturado': facturado,
+      'Articulo': articulo,
+      'FechaLimite': fechaLimite
     };
   }
 
-  // Map for update
-  Map<String, dynamic> mapForUpdate() {
-    return mapForInsert(); // Same as insert for simplicity
-  }
-
-  // Crear una instancia from JSON
-  factory Servicio.fromJson(Map<String, dynamic> json) {
-    return Servicio(
+  factory NuevaOrdenServicio.fromJson(Map<String, dynamic> json) {
+    return NuevaOrdenServicio(
       id: json['Id'],
-      clienteId: json['ClienteId'],
-      cliente: json['Cliente'],
+      contactoId: json['ContactoId'],
+      contacto: NuevaOrdenContacto.fromJson(json['Contacto']),
+      negociacionId: json['NegociacionId'],
+      fechaProgramacion: json['FechaProgramacion'],
+      calle: json['Calle'],
+      numeroExterno: json['NumeroExterno'],
+      numeroInterno: json['NumeroInterno'],
+      colonia: json['Colonia'],
+      ciudad: json['Ciudad'],
       estado: json['Estado'],
-      sucursalId: json['SucursalId'],
-      sucursal: json['Sucursal'],
-      fecha: DateTime.parse(json['Fecha']),
-      horario: json['Horario'],
-      tipoServicio: json['TipoServicio'],
-      telefono: json['Telefono'],
-      domicilio: json['Domicilio'],
-      tecnico: ServicioTecnicoModel.fromJson(json['Tecnico']),
-      vehiculo: json['Vehiculo'],
-      acumulador: json['Acumulador'],
-      fotografiaacumulador: json['FotografiaAcumulador'],
-      marca: json['Marca'],
-      linea: json['Linea'],
-      modelo: json['Modelo'],
-      precio: json['Precio'],
-      descuento: json['Descuento'],
-      requiereTerminal: json['RequiereTerminal'],
-      urgente: json['Urgente'],
-      canalCaptacion: json['CanalCaptacion'],
-      observacion: json['Observacion'],
-      creadoPor: json['CreadoPor'],
       latitud: json['Latitud'],
       longitud: json['Longitud'],
-      fechaExpiracion: DateTime.parse(json['FechaExpiracion']), // Agregado
-      estatus: json['Estatus'], // Agregado
+      tipoServicio: json['TipoServicio'],
+      formaPago: json['FormaPago'],
+      subtotal: json['Subtotal'],
+      descuento: json['Descuento'],
+      total: json['Total'],
+      vehiculoMarca: json['VehiculoMarca'],
+      vehiculoModelo: json['VehiculoModelo'],
+      vehiculoYear: json['VehiculoYear'],
+      cupon: json['Cupon'],
+      tecnico: json['Tecnico'] != null
+          ? ServicioTecnicoModel.fromJson(json['Tecnico'])
+          : null,
+      centroServicioId: json['CentroServicioId'],
+      tecnicoId: json['TecnicoId'],
+      codigoEstado: json['CodigoEstado'],
+      fechaCreacion: DateTime.parse(json['FechaCreacion']),
+      fechaInicio: json['FechaInicio'],
+      fechaArribo: json['FechaArribo'],
+      fechaTermino: json['FechaTermino'],
+      motivoCancelacion: json['MotivoCancelacion'],
+      facturado: json['Facturado'],
+      articulo: Articulo.fromJson(json['Articulo']),
+      fechaLimite: DateTime.parse(json['FechaLimite']),
     );
   }
 }
@@ -144,289 +159,145 @@ const String ServiciosJson = '''
 [
   {
     "Id": 1,
-    "ClienteId": 101,
-    "Cliente": "Empresa ABC",
-    "Estado": 1,
-    "SucursalId": 5,
-    "Sucursal": "Sucursal Norte",
-    "Fecha": "2024-08-01T10:00:00Z",
-    "Horario": "10:00 - 12:00",
-    "TipoServicio": "Mantenimiento",
-    "Telefono": "+524776145764",
-    "Domicilio": "Av. Principal 123",
+    "ContactoId": 201,
+    "Contacto": {
+      "Id": 1,
+      "Nombre": "Carlos",
+      "ApellidoPaterno": "González",
+      "ApellidoMaterno": "Ramírez",
+      "NombreCompleto": "Carlos González Ramírez",
+      "Email": "carlos.gonzalez@example.com"
+    },
+    "NegociacionId": 0,
+    "FechaProgramacion": "2024-10-25T10:00:00Z",
+    "Calle": "Av. Central",
+    "NumeroExterno": "456",
+    "NumeroInterno": "12",
+    "Colonia": "Naranjos",
+    "Ciudad": "León Gto",
+    "Estado": "CDMX",
+    "Latitud": 21.160149,
+    "Longitud": -101.644646,
+    "TipoServicio": "Reparación",
+    "FormaPago": "Tarjeta",
+    "Subtotal": 100.0,
+    "Descuento": 5.0,
+    "Total": 95.0,
+    "VehiculoMarca": "Toyota",
+    "VehiculoModelo": "Corolla",
+    "VehiculoYear": 2020,
+    "Cupon": "ABC123",
     "Tecnico": {
       "Id": 1,
-      "NombreCompleto": "Juan Pérez",
-      "Fotografia": "assets/ArianaTecnica.jpg"
+      "Nombre": "Juan Pérez",
+      "NombreCompleto": "Juan Pérez López",
+      "EmpleadoId": "EMP001",
+      "Fotografia": "assets/ArianaTecnica.jpg",
+      "CentroServicio": "CS Naranjos"
     },
-    "Vehiculo": "Camión de Servicio",
-    "Acumulador": "L-U1-340",
-    "FotografiaAcumulador": "assets/L-U1-340PODADORA.png",
-    "Marca": "LTH",
-    "Linea": "Línea X",
-    "Modelo": "Modelo 2024",
-    "Precio": 150.0,
-    "Descuento": 10.0,
-    "RequiereTerminal": true,
-    "Urgente": false,
-    "CanalCaptacion": "Email",
-    "Observacion": "Servicio regular.",
-    "CreadoPor": "admin",
-    "Latitud": 21.147900, 
-    "Longitud": -101.704175,
-    "FechaExpiracion": "2024-11-01T10:00:00Z", 
-    "Estatus": "Activo" 
+    "CentroServicioId": 0,
+    "TecnicoId": 1,
+    "CodigoEstado": "Completado",
+    "FechaCreacion": "2024-11-13T09:00:00Z",
+    "FechaInicio": "2024-10-01T10:00:00Z",
+    "FechaArribo": "2024-10-01T12:00:00Z",
+    "FechaTermino": "2024-10-01T14:00:00Z",
+    "MotivoCancelacion": "",
+    "Facturado": false,
+"Articulo": {
+  "Id": 1,
+  "Nombre": "Producto X",
+  "Descripcion": "Descripción del Producto X",
+  "Precio": 50.0,
+  "Cantidad": 2,
+  "FamiliaId": 0,
+  "Familia": "Default Familia",
+  "MarcaId": 0,
+  "PrecioLista": 50.0,
+  "PrecioListaUsado": 50.0,
+  "PrecioUsado": 50.0,
+  "PrecioConDescuento": 45.0,
+  "Descuento": 5.0,
+  "DescuentoPorcentaje": 10.0,
+  "ImagenUrl": "https://chedrauimx.vtexassets.com/arquivos/ids/37127740/7501121601044_02.jpg?v=638640426028530000",
+  "GrupoId": 0,
+  "Factor": 1.0,
+  "Importe": 100.0,
+  "Grupo": "Default Grupo",
+  "ImagenUsado": "default_image_usado.jpg"
+},
+    "FechaLimite": "2024-11-01T10:00:00Z"
   },
   {
     "Id": 2,
-    "ClienteId": 102,
-    "Cliente": "Empresa XYZ",
-    "Estado": 2,
-    "SucursalId": 6,
-    "Sucursal": "Sucursal Este",
-    "Fecha": "2024-08-02T14:00:00Z",
-    "Horario": "14:00 - 16:00",
-    "TipoServicio": "Reparación",
-    "Telefono": "+524776145764",
-    "Domicilio": "Calle Secundaria 456",
+    "ContactoId": 202,
+    "Contacto": {
+      "Id": 2,
+      "Nombre": "María",
+      "ApellidoPaterno": "Hernández",
+      "ApellidoMaterno": "López",
+      "NombreCompleto": "María Hernández López",
+      "Email": "maria.hernandez@example.com"
+    },
+    "NegociacionId": 0,
+    "FechaProgramacion": "2024-09-15T14:00:00Z",
+    "Calle": "Calle Falsa",
+    "NumeroExterno": "789",
+    "NumeroInterno": "A",
+    "Colonia": "Jardines",
+    "Ciudad": "Guadalajara",
+    "Estado": "Jalisco",
+    "Latitud": 20.659699,
+    "Longitud": -103.349609,
+    "TipoServicio": "Instalación",
+    "FormaPago": "Efectivo",
+    "Subtotal": 200.0,
+    "Descuento": 20.0,
+    "Total": 180.0,
+    "VehiculoMarca": "Nissan",
+    "VehiculoModelo": "Versa",
+    "VehiculoYear": 2019,
+    "Cupon": "XYZ789",
     "Tecnico": {
       "Id": 2,
-      "NombreCompleto": "Ana Martínez",
-      "Fotografia": "assets/ArianaTecnica.jpg"
+      "Nombre": "Pedro López",
+      "NombreCompleto": "Pedro López González",
+      "EmpleadoId": "EMP002",
+      "Fotografia": "assets/tecnico2.jpg",
+      "CentroServicio": "Centro Guadalajara"
     },
-    "Vehiculo": "Van de Servicio",
-    "Acumulador": "H-24-600",
-    "FotografiaAcumulador": "assets/H-24-600.png",
-    "Marca": "HI-TEC",
-    "Linea": "Línea Y",
-    "Modelo": "Modelo 2023",
-    "Precio": 200.0,
-    "Descuento": 20.0,
-    "RequiereTerminal": false,
-    "Urgente": true,
-    "CanalCaptacion": "Teléfono",
-    "Observacion": "Reparación urgente.",
-    "CreadoPor": "admin",
-    "Latitud": 21.147900, 
-    "Longitud": -101.704175,
-    "FechaExpiracion": "2024-11-02T14:00:00Z", 
-    "Estatus": "En Proceso" 
-  },
-  {
-    "Id": 3,
-    "ClienteId": 103,
-    "Cliente": "Cliente DEF",
-    "Estado": 3,
-    "SucursalId": 7,
-    "Sucursal": "Sucursal Sur",
-    "Fecha": "2024-08-12T09:00:00Z",
-    "Horario": "09:00 - 11:00",
-    "TipoServicio": "Instalación",
-    "Telefono": "+524776145764",
-    "Domicilio": "Avenida 789",
-    "Tecnico": {
-      "Id": 3,
-      "NombreCompleto": "Carlos Gómez",
-      "Fotografia": "assets/ArianaTecnica.jpg"
-    },
-    "Vehiculo": "Furgoneta",
-    "Acumulador": "H-27-810",
-    "FotografiaAcumulador": "assets/H-27-810.png",
-    "Marca": "HI-TEC",
-    "Linea": "Línea Z",
-    "Modelo": "Modelo 2022",
-    "Precio": 300.0,
-    "Descuento": 15.0,
-    "RequiereTerminal": true,
-    "Urgente": false,
-    "CanalCaptacion": "Visita",
-    "Observacion": "Instalación de nuevo sistema.",
-    "CreadoPor": "admin",
-    "Latitud": 21.147900, 
-    "Longitud": -101.704175,
-    "FechaExpiracion": "2024-11-12T09:00:00Z", 
-    "Estatus": "Terminado" 
-  },
-  {
-    "Id": 4,
-    "ClienteId": 104,
-    "Cliente": "Cliente GHI",
-    "Estado": 1,
-    "SucursalId": 8,
-    "Sucursal": "Sucursal Oeste",
-    "Fecha": "2024-09-27T11:00:00Z",
-    "Horario": "11:00 - 13:00",
-    "TipoServicio": "Mantenimiento",
-    "Telefono": "+524776145764",
-    "Domicilio": "Calle Principal 321",
-    "Tecnico": {
-      "Id": 4,
-      "NombreCompleto": "Laura Fernández",
-      "Fotografia": "assets/ArianaTecnica.jpg"
-    },
-    "Vehiculo": "Camión de Servicio",
-    "Acumulador": "L-24F-710",
-    "FotografiaAcumulador": "assets/L-24F-710AGM.png",
-    "Marca": "AGM",
-    "Linea": "Línea A",
-    "Modelo": "Modelo 2021",
-    "Precio": 180.0,
-    "Descuento": 5.0,
-    "RequiereTerminal": false,
-    "Urgente": false,
-    "CanalCaptacion": "Redes Sociales",
-    "Observacion": "Mantenimiento preventivo.",
-    "CreadoPor": "admin",
-    "Latitud": 20.955290, 
-    "Longitud": -101.433157,
-    "FechaExpiracion": "2024-11-27T11:00:00Z", 
-    "Estatus": "Activo" 
-  },
-  {
-    "Id": 5,
-    "ClienteId": 105,
-    "Cliente": "Cliente JKL",
-    "Estado": 2,
-    "SucursalId": 9,
-    "Sucursal": "Sucursal Centro",
-    "Fecha": "2024-09-26T13:00:00Z",
-    "Horario": "13:00 - 15:00",
-    "TipoServicio": "Reparación",
-    "Telefono": "+524776145764",
-    "Domicilio": "Boulevard 654",
-    "Tecnico": {
-      "Id": 5,
-      "NombreCompleto": "Pedro Rodríguez",
-      "Fotografia": "assets/ArianaTecnica.jpg"
-    },
-    "Vehiculo": "Van de Servicio",
-    "Acumulador": "LTX-22F-600",
-    "FotografiaAcumulador": "assets/LTX-22F-600TAXI.png",
-    "Marca": "AGM",
-    "Linea": "Línea B",
-    "Modelo": "Modelo 2020",
-    "Precio": 250.0,
-    "Descuento": 10.0,
-    "RequiereTerminal": true,
-    "Urgente": true,
-    "CanalCaptacion": "Email",
-    "Observacion": "Reparación urgente.",
-    "CreadoPor": "admin",
-    "Latitud": 21.147900, 
-    "Longitud": -101.704175,
-    "FechaExpiracion": "2024-10-26T13:00:00Z", 
-    "Estatus": "Rechazado" 
-  },
-  {
-    "Id": 6,
-    "ClienteId": 103,
-    "Cliente": "Cliente DEF",
-    "Estado": 3,
-    "SucursalId": 7,
-    "Sucursal": "Sucursal Sur",
-    "Fecha": "2024-08-12T09:00:00Z",
-    "Horario": "09:00 - 11:00",
-    "TipoServicio": "Instalación",
-    "Telefono": "+524776145764",
-    "Domicilio": "Avenida 789",
-    "Tecnico": {
-      "Id": 6,
-      "NombreCompleto": "Carlos Gómez",
-      "Fotografia": "assets/ArianaTecnica.jpg"
-    },
-    "Vehiculo": "Furgoneta",
-    "Acumulador": "H-27-810",
-    "FotografiaAcumulador": "assets/H-27-810.png",
-    "Marca": "HI-TEC",
-    "Linea": "Línea Z",
-    "Modelo": "Modelo 2022",
-    "Precio": 300.0,
-    "Descuento": 15.0,
-    "RequiereTerminal": true,
-    "Urgente": false,
-    "CanalCaptacion": "Visita",
-    "Observacion": "Instalación de nuevo sistema.",
-    "CreadoPor": "admin",
-    "Latitud": 21.147900, 
-    "Longitud": -101.704175,
-    "FechaExpiracion": "2024-11-12T09:00:00Z", 
-    "Estatus": "Terminado" 
-  },
-  {
-    "Id": 7,
-    "ClienteId": 104,
-    "Cliente": "Cliente GHI",
-    "Estado": 1,
-    "SucursalId": 8,
-    "Sucursal": "Sucursal Oeste",
-    "Fecha": "2024-11-04T11:00:00Z",
-    "Horario": "11:00 - 13:00",
-    "TipoServicio": "Mantenimiento",
-    "Telefono": "+524776145764",
-    "Domicilio": "Calle Principal 321",
-    "Tecnico": {
-      "Id": 7,
-      "NombreCompleto": "Laura Fernández",
-      "Fotografia": "assets/ArianaTecnica.jpg"
-    },
-    "Vehiculo": "Camión de Servicio",
-    "Acumulador": "L-24F-710",
-    "FotografiaAcumulador": "assets/L-24F-710AGM.png",
-    "Marca": "AGM",
-    "Linea": "Línea A",
-    "Modelo": "Modelo 2021",
-    "Precio": 180.0,
-    "Descuento": 5.0,
-    "RequiereTerminal": false,
-    "Urgente": false,
-    "CanalCaptacion": "Redes Sociales",
-    "Observacion": "Mantenimiento preventivo.",
-    "CreadoPor": "admin",
-    "Latitud": 20.955290, 
-    "Longitud": -101.433157,
-    "FechaExpiracion": "2024-12-04T11:00:00Z", 
-    "Estatus": "Activo" 
-  },
-  {
-    "Id": 8,
-    "ClienteId": 105,
-    "Cliente": "Cliente JKL",
-    "Estado": 2,
-    "SucursalId": 9,
-    "Sucursal": "Sucursal Centro",
-    "Fecha": "2024-11-26T13:00:00Z",
-    "Horario": "13:00 - 15:00",
-    "TipoServicio": "Reparación",
-    "Telefono": "+524776145764",
-    "Domicilio": "Boulevard 654",
-    "Tecnico": {
-      "Id": 8,
-      "NombreCompleto": "Pedro Rodríguez",
-      "Fotografia": "assets/ArianaTecnica.jpg"
-    },
-    "Vehiculo": "Van de Servicio",
-    "Acumulador": "LTX-22F-600",
-    "FotografiaAcumulador": "assets/LTX-22F-600TAXI.png",
-    "Marca": "AGM",
-    "Linea": "Línea B",
-    "Modelo": "Modelo 2020",
-    "Precio": 250.0,
-    "Descuento": 10.0,
-    "RequiereTerminal": true,
-    "Urgente": true,
-    "CanalCaptacion": "Email",
-    "Observacion": "Reparación urgente.",
-    "CreadoPor": "admin",
-    "Latitud": 21.147900, 
-    "Longitud": -101.704175,
-    "FechaExpiracion": "2024-11-04T13:00:00Z", 
-    "Estatus": "En Proceso" 
+    "CentroServicioId": 0,
+    "TecnicoId": 2,
+    "CodigoEstado": "En Servicio",
+    "FechaCreacion": "2024-11-13T08:00:00Z",
+    "FechaInicio": "2024-11-11T09:00:00Z",
+    "FechaArribo": "2024-11-11T11:00:00Z",
+    "FechaTermino": "2024-11-11T13:00:00Z",
+    "MotivoCancelacion": "No se presentó el técnico.",
+    "Facturado": false,
+"Articulo": {
+  "Id": 2,
+  "Nombre": "Producto X",
+  "Descripcion": "Descripción del Producto X",
+  "Precio": 50.0,
+  "Cantidad": 2,
+  "FamiliaId": 0,
+  "Familia": "Default Familia",
+  "MarcaId": 0,
+  "PrecioLista": 50.0,
+  "PrecioListaUsado": 50.0,
+  "PrecioUsado": 50.0,
+  "PrecioConDescuento": 45.0,
+  "Descuento": 5.0,
+  "DescuentoPorcentaje": 10.0,
+  "ImagenUrl": "https://i5.walmartimages.com.mx/gr/images/product-images/img_large/00750112165705L.jpg",
+  "GrupoId": 0,
+  "Factor": 1.0,
+  "Importe": 100.0,
+  "Grupo": "Default Grupo",
+  "ImagenUsado": "default_image_usado.jpg"
+},
+    "FechaLimite": "2024-11-15T15:00:00Z"
   }
 ]
 ''';
-//21.15076405228794, -101.69781001390459
-//21.152355123273168, -101.71049233840212
-//Mi casa: 21.08703570473319, -101.61876213324915
-//Nova 21.146956601078177, -101.71005660653645
-
-//21.1470194654821, -101.70953214841474

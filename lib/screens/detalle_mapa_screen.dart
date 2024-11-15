@@ -10,7 +10,7 @@ import '../models/servicio.dart';
 import '../widgets/enermax_text.dart';
 
 class DetalleMapa extends StatefulWidget {
-  final Servicio servicio;
+  final NuevaOrdenServicio servicio;
 
   const DetalleMapa({super.key, required this.servicio});
 
@@ -29,7 +29,7 @@ class _DetalleMapaState extends State<DetalleMapa> {
   MapBoxOptions? _navigationOption;
   late double _currentLatitude;
   late double _currentLongitude;
-  late Servicio servicioRecibido;
+  late NuevaOrdenServicio servicioRecibido;
   bool _loading = true; // Variable to track loading state
   double _dataContainerHeight = 270.0; // Altura inicial del contenedor
   final ImagePicker _picker = ImagePicker();
@@ -51,8 +51,8 @@ class _DetalleMapaState extends State<DetalleMapa> {
 
     // Configura las opciones de navegación
     _navigationOption = MapBoxNavigation.instance.getDefaultOptions();
-    _navigationOption!.initialLatitude = _currentLatitude;
-    _navigationOption!.initialLongitude = _currentLongitude;
+    _navigationOption!.initialLatitude = servicioRecibido.latitud;
+    _navigationOption!.initialLongitude = servicioRecibido.longitud;
     _navigationOption!.mode = MapBoxNavigationMode.driving;
     _navigationOption!.language = "es"; // Cambia el idioma a español
     _navigationOption!.units = VoiceUnits.metric; // Cambia la unidad a metros
@@ -77,23 +77,17 @@ class _DetalleMapaState extends State<DetalleMapa> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: PrimaryColor,
-        title: EnermaxText(
-          mainAxisAlignment: MainAxisAlignment.start,
-        ),
-        iconTheme: IconThemeData(
-          color: Colors
-              .white, // Cambia el color de la flecha de retroceso a blanco
-        ),
+        title: EnermaxText(mainAxisAlignment: MainAxisAlignment.start),
+        iconTheme: IconThemeData(color: Colors.white),
       ),
       body: Skeletonizer(
         enabled: _loading,
         child: _navigationOption == null
             ? Center(child: CircularProgressIndicator())
-            : Column(
+            : Stack(
                 children: [
-                  // Contenedor para el mapa
-                  Expanded(
-                    flex: 2,
+                  // Mapa en la parte superior
+                  Positioned.fill(
                     child: MapBoxNavigationView(
                       options: _navigationOption!,
                       onRouteEvent: _onRouteEvent,
@@ -104,208 +98,135 @@ class _DetalleMapaState extends State<DetalleMapa> {
                       },
                     ),
                   ),
-                  // Contenedor para los datos del servicio y botón
-                  AnimatedContainer(
-                    duration: Duration(milliseconds: 300),
-                    height: _dataContainerHeight,
-                    color: Colors.white,
-                    padding: EdgeInsets.all(16),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
+                  // Modal que se puede deslizar
+                  DraggableScrollableSheet(
+                    initialChildSize: 0.5, // Tamaño inicial
+                    minChildSize: 0.1, // Tamaño mínimo
+                    maxChildSize: 0.5, // Tamaño máximo
+                    builder: (context, scrollController) {
+                      return Container(
+                        margin: EdgeInsets.symmetric(
+                            horizontal: 16), // Espacio alrededor
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(
+                                16), // Radio para la esquina superior izquierda
+                            topRight: Radius.circular(
+                                16), // Radio para la esquina superior derecha
+                          ),
+                        ),
+                        padding: EdgeInsets.all(16),
+                        child: SingleChildScrollView(
+                          controller: scrollController,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              CircleAvatar(
-                                backgroundImage: NetworkImage(
-                                    "https://static.bellezaparatodos.com/2021/11/R.E.M.-Beauty-Ariana-Grande-Promo.jpg"), // Replace with actual image URL
-                                radius: 24,
-                              ),
-                              SizedBox(width: 16),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                              Row(
                                 children: [
-                                  Text(
-                                    servicioRecibido.cliente,
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                  CircleAvatar(
+                                    backgroundImage: NetworkImage(
+                                        "URL_DE_IMAGEN_DEL_CONTACTO"),
+                                    radius: 24,
                                   ),
-                                  Text(
-                                    servicioRecibido.telefono,
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Spacer(),
-                              IconButton(
-                                icon: Icon(Icons.phone),
-                                onPressed: () {
-                                  _makePhoneCall(
-                                      '${servicioRecibido.telefono}');
-                                },
-                              ),
-                              IconButton(
-                                icon: Icon(Icons.message),
-                                onPressed: () {},
-                              ),
-                            ],
-                          ),
-                          Divider(),
-                          Center(
-                            child: Text(
-                              '${servicioRecibido.tipoServicio}',
-                              style: TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.bold),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                          SizedBox(height: 1),
-                          Row(
-                            children: [
-                              CircleAvatar(
-                                backgroundImage: NetworkImage(
-                                    "https://enersishr.blob.core.windows.net/employee-profile-pictures/51c98a5d-5cc9-49d6-9d10-4741416bec14-thumbnail.jpg"), // Replace with actual image URL
-                                radius: 24,
-                              ),
-                              SizedBox(width: 16),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    servicioRecibido.tecnico.nombreCompleto,
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 3),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "Precio: \$${servicioRecibido.precio.toStringAsFixed(2)}",
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                  Text(
-                                    servicioRecibido.vehiculo!,
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "Acumulador",
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  Text(
-                                    "${servicioRecibido.acumulador}",
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.blue,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 5),
-                          SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                ElevatedButton(
-                                  onPressed:
-                                      _isNavigating ? null : _startNavigation,
-                                  style: ButtonStyle(
-                                    backgroundColor:
-                                        MaterialStateProperty.all<Color>(
-                                            Colors.white),
-                                    foregroundColor:
-                                        MaterialStateProperty.all<Color>(
-                                            Colors.black),
-                                    shape: MaterialStateProperty.all<
-                                        RoundedRectangleBorder>(
-                                      RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(4.0),
-                                      ),
-                                    ),
-                                  ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize
-                                        .min, // Para que el botón se ajuste al contenido
+                                  SizedBox(width: 16),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      Icon(
-                                        Icons
-                                            .navigation, // El icono que quieres mostrar
-                                        color: Colors
-                                            .black, // Ajusta el color según lo necesites
-                                      ),
-                                      SizedBox(
-                                          width:
-                                              8), // Espacio entre el icono y el texto
-                                      Text(_isNavigating
-                                          ? "Navegando..."
-                                          : "Iniciar Navegación"),
+                                      Text(servicioRecibido.contacto.nombre,
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold)),
+                                      Text(
+                                          servicioRecibido.contacto.email ?? '',
+                                          style: TextStyle(fontSize: 14)),
+                                      Text(
+                                          '${servicioRecibido.contacto.apellidoPaterno} ${servicioRecibido.contacto.apellidoMaterno ?? ''}',
+                                          style: TextStyle(fontSize: 14)),
                                     ],
                                   ),
-                                ),
-                                SizedBox(
-                                    width:
-                                        8), // Añade espacio entre los botones si es necesario
-                                ElevatedButton(
-                                  onPressed: _tomarFoto,
-                                  style: ButtonStyle(
-                                    backgroundColor:
-                                        MaterialStateProperty.all<Color>(
-                                            Colors.white),
-                                    foregroundColor:
-                                        MaterialStateProperty.all<Color>(
-                                            Colors.black),
-                                    shape: MaterialStateProperty.all<
-                                        RoundedRectangleBorder>(
-                                      RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(4.0),
-                                      ),
+                                ],
+                              ),
+                              Divider(),
+                              Text(
+                                  'Servicio: ${servicioRecibido.tipoServicio ?? 'No especificado'}',
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold)),
+                              Text(
+                                  'Producto: ${servicioRecibido.articulo ?? 'No especificado'}',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                  )),
+                              Text(
+                                  'Fecha Programada: ${servicioRecibido.fechaProgramacion ?? 'No disponible'}',
+                                  style: TextStyle(fontSize: 16)),
+                              Text(
+                                  'Dirección: ${servicioRecibido.calle} ${servicioRecibido.numeroExterno}',
+                                  style: TextStyle(fontSize: 16)),
+                              Text(
+                                  'Ciudad: ${servicioRecibido.ciudad}, Estado: ${servicioRecibido.estado}',
+                                  style: TextStyle(fontSize: 16)),
+                              Divider(),
+                              if (servicioRecibido.vehiculoMarca != null)
+                                Text(
+                                    'Vehículo: ${servicioRecibido.vehiculoMarca} ${servicioRecibido.vehiculoModelo} (${servicioRecibido.vehiculoYear})',
+                                    style: TextStyle(fontSize: 16)),
+                              Divider(),
+                              Wrap(
+                                spacing: 10, // Espacio entre textos
+                                alignment: WrapAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    "Subtotal: \$${servicioRecibido.subtotal.toStringAsFixed(2)}",
+                                    style: TextStyle(fontSize: 16),
+                                  ),
+                                  Text(
+                                    "Descuento: \$${servicioRecibido.descuento.toStringAsFixed(2)}",
+                                    style: TextStyle(fontSize: 16),
+                                  ),
+                                  Text(
+                                    "Total: \$${servicioRecibido.total.toStringAsFixed(2)}",
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 10),
+                              Row(
+                                children: [
+                                  ElevatedButton(
+                                    onPressed:
+                                        _isNavigating ? null : _startNavigation,
+                                    style: ButtonStyle(
+                                      backgroundColor:
+                                          MaterialStateProperty.all<Color>(
+                                              Colors.white),
+                                      foregroundColor:
+                                          MaterialStateProperty.all<Color>(
+                                              Colors.black),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(Icons.navigation,
+                                            color: Colors.black),
+                                        SizedBox(width: 8),
+                                        Text(_isNavigating
+                                            ? "Navegando..."
+                                            : "Iniciar Navegación"),
+                                      ],
                                     ),
                                   ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(Icons.camera_alt),
-                                      SizedBox(width: 8),
-                                      Text('Tomar Fotografía'),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
+                                ],
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                    ),
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),

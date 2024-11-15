@@ -1,67 +1,39 @@
 class ServicioTecnicoModel {
   int id;
+  String nombre;
   String nombreCompleto;
+  String? empleadoId;
   String? fotografia;
+  String centroServicio;
 
   ServicioTecnicoModel({
     required this.id,
+    required this.nombre,
     required this.nombreCompleto,
+    this.empleadoId,
     this.fotografia,
+    required this.centroServicio,
   });
 
-  // Convert the object to a map for insertion
   Map<String, dynamic> toMap() {
     return {
       'Id': id,
+      'Nombre': nombre,
       'NombreCompleto': nombreCompleto,
+      'EmpleadoId': empleadoId,
       'Fotografia': fotografia,
+      'CentroServicio': centroServicio,
     };
   }
 
-  // Create an instance from a map (JSON)
   factory ServicioTecnicoModel.fromJson(Map<String, dynamic> json) {
     return ServicioTecnicoModel(
       id: json['Id'],
+      nombre: json['Nombre'],
       nombreCompleto: json['NombreCompleto'],
+      empleadoId: json['EmpleadoId'],
       fotografia: json['Fotografia'],
+      centroServicio: json['CentroServicio'],
     );
   }
 }
-
-const String ServiciosJson = ''' 
-[
-  {
-    "Id": 1,
-    "NombreCompleto": "Juan Pérez",
-    "Fotografia": "'assets/l-24mdc-140.png'"
-  },
-  {
-    "Id": 2,
-    "NombreCompleto": "Ana Martínez",
-    "Fotografia": "'assets/l-24mdc-140.png'"
-  },
-  {
-    "Id": 3,
-    "NombreCompleto": "Carlos Gómez",
-    "Fotografia": "'assets/l-24mdc-140.png'"
-  },
-  {
-    "Id": 4,
-    "NombreCompleto": "Laura Fernández",
-    "Fotografia": "'assets/l-24mdc-140.png'"
-  },
-  {
-    "Id": 5,
-    "NombreCompleto": "Pedro Rodríguez",
-    "Fotografia": "'assets/l-24mdc-140.png'"
-  }
-]
-''';
-
-/*
-Image.asset(
-parcel.imageUrl ?? 'assets/l-24mdc-140.png',
-height: 50,
-width: 50,
-fit: BoxFit.cover,
-),*/

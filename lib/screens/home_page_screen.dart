@@ -6,6 +6,8 @@ import 'package:motion_tab_bar/MotionBadgeWidget.dart';
 import 'package:motion_tab_bar/MotionTabBar.dart';
 import 'package:motion_tab_bar/MotionTabBarController.dart';
 
+import '../models/tecnico.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -15,6 +17,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   MotionTabBarController? _motionTabBarController;
+  late ServicioTecnicoModel tecnico;
 
   @override
   void initState() {
@@ -40,7 +43,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         controller: _motionTabBarController,
         children: [
           const ListaServicios(),
-          const PerfilScreen(),
+          PerfilScreen(
+            tecnico: tecnico,
+          ),
         ],
       ),
       bottomNavigationBar: MotionTabBar(

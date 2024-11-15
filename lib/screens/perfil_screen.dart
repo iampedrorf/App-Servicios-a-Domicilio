@@ -2,18 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../constants.dart';
+import '../models/tecnico.dart';
 import '../providers/counter_notifications.dart';
 import '../widgets/enermax_text.dart';
 import 'inbox_screen.dart';
 
 class PerfilScreen extends StatefulWidget {
-  const PerfilScreen({super.key});
+  final ServicioTecnicoModel tecnico; // Recibe el modelo de técnico
+  const PerfilScreen({super.key, required this.tecnico});
 
   @override
   State<PerfilScreen> createState() => _PerfilScreenState();
 }
 
 class _PerfilScreenState extends State<PerfilScreen> {
+  bool isWorking = false; // Estado del switch (si comenzó a trabajar o no)
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,12 +74,12 @@ class _PerfilScreenState extends State<PerfilScreen> {
                 children: [
                   CircleAvatar(
                     radius: 50,
-                    backgroundImage: NetworkImage(
-                        "https://static.bellezaparatodos.com/2021/11/R.E.M.-Beauty-Ariana-Grande-Promo.jpg"), // Cambia esto con la URL de la imagen real
+                    backgroundImage: NetworkImage(widget.tecnico.fotografia ??
+                        "https://static.bellezaparatodos.com/2021/11/R.E.M.-Beauty-Ariana-Grande-Promo.jpg"),
                   ),
                   SizedBox(height: 10),
                   Text(
-                    'Ariana Grande',
+                    widget.tecnico.nombreCompleto,
                     style: TextStyle(
                       fontSize: 22,
                       color: Colors.white,
@@ -83,56 +87,25 @@ class _PerfilScreenState extends State<PerfilScreen> {
                     ),
                   ),
                   Text(
-                    'Singer',
+                    widget.tecnico.centroServicio,
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.white,
                     ),
                   ),
                   SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Column(
-                        children: [
-                          Text(
-                            '1000',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                            ),
-                          ),
-                          Text(
-                            'Followers',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(width: 40),
-                      Column(
-                        children: [
-                          Text(
-                            '1200',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                            ),
-                          ),
-                          Text(
-                            'Following',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                  SwitchListTile(
+                    title: Text('¿Ha comenzado a trabajar?',
+                        style: TextStyle(color: Colors.white)),
+                    value: isWorking,
+                    onChanged: (bool value) {
+                      setState(() {
+                        isWorking = value;
+                      });
+                    },
+                    activeColor: Colors.green,
+                    inactiveThumbColor: Colors.grey,
+                    inactiveTrackColor: Colors.grey[300],
                   ),
                 ],
               ),

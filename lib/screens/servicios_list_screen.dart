@@ -1,12 +1,16 @@
 import 'dart:convert';
 import 'package:app_servicios_a_domicilio/constants.dart';
+import 'package:app_servicios_a_domicilio/screens/perfil_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:intl/intl.dart'; // Importa la librería intl
+import 'package:intl/intl.dart';
+import '../main.dart';
 import '../models/servicio.dart';
 import '../providers/counter_notifications.dart';
+import '../providers/push_notifications_provider.dart';
 import '../widgets/enermax_text.dart';
 import 'detalle_mapa_screen.dart';
+import 'notification_detail_screen.dart';
 
 class ListaServicios extends StatefulWidget {
   const ListaServicios({super.key});
@@ -16,8 +20,10 @@ class ListaServicios extends StatefulWidget {
 }
 
 class _ListaServiciosState extends State<ListaServicios> {
-  List<Servicio> servicios = [];
+  List<NuevaOrdenServicio> servicios = [];
   String filter = 'Activos';
+  List<bool> botonesVisibles = [];
+  DateTime currentDate = DateTime.now();
 
   @override
   void initState() {
@@ -27,15 +33,50 @@ class _ListaServiciosState extends State<ListaServicios> {
 
   void cargarServicios() {
     List<dynamic> jsonList = json.decode(ServiciosJson);
-    List<Servicio> parsedServicios =
-        jsonList.map((json) => Servicio.fromJson(json)).toList();
+    List<NuevaOrdenServicio> parsedServicios =
+        jsonList.map((json) => NuevaOrdenServicio.fromJson(json)).toList();
     setState(() {
       servicios = parsedServicios;
+      botonesVisibles = List.generate(servicios.length, (index) => true);
     });
+  }
+
+  // Método para ocultar los botones y mostrar "Detalles"
+  void aceptarServicio(int index) {
+    setState(() {
+      botonesVisibles[index] = false;
+    });
+  }
+
+  // Método para eliminar el servicio de la lista
+  void rechazarServicio(int index) {
+    setState(() {
+      servicios.removeAt(index);
+      botonesVisibles.removeAt(index);
+    });
+  }
+
+  List<NuevaOrdenServicio> filtrarServicios() {
+    if (filter == 'Activos') {
+      return servicios
+          .where((servicio) =>
+              servicio.fechaCreacion != null &&
+              servicio.fechaCreacion!
+                  .isAfter(currentDate.subtract(Duration(days: 1))))
+          .toList();
+    } else {
+      return servicios
+          .where((servicio) =>
+              servicio.fechaCreacion != null &&
+              servicio.fechaCreacion!.isBefore(DateTime(
+                  currentDate.year, currentDate.month, currentDate.day)))
+          .toList();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final serviciosFiltrados = filtrarServicios();
     return Scaffold(
       appBar: AppBar(
         backgroundColor: PrimaryColor,
@@ -49,10 +90,103 @@ class _ListaServiciosState extends State<ListaServicios> {
             );
           },
         ),
-        title: EnermaxText(
-          mainAxisAlignment: MainAxisAlignment.center,
-        ),
+        title: EnermaxText(mainAxisAlignment: MainAxisAlignment.center),
         actions: [
+          ElevatedButton(
+            onPressed: () {
+              // Convierte la fecha límite en formato DateTime
+              DateTime fechaLimite = DateTime.parse("2024-11-15T09:30:00Z");
+              // Datos personalizados para la notificación
+              Map<String, dynamic> notificationData = {
+                "Id": 2,
+                "ContactoId": 202,
+                "Contacto": {
+                  "Id": 2,
+                  "Nombre": "María",
+                  "ApellidoPaterno": "Hernández",
+                  "ApellidoMaterno": "López",
+                  "NombreCompleto": "María Hernández López",
+                  "Email": "maria.hernandez@example.com"
+                },
+                "NegociacionId": 0,
+                "FechaProgramacion": "2024-09-15T14:00:00Z",
+                "Calle": "Calle Falsa",
+                "NumeroExterno": "789",
+                "NumeroInterno": "A",
+                "Colonia": "Jardines",
+                "Ciudad": "Guadalajara",
+                "Estado": "Jalisco",
+                "Latitud": 20.659699,
+                "Longitud": -103.349609,
+                "TipoServicio": "Instalación",
+                "FormaPago": "Efectivo",
+                "Subtotal": 200.0,
+                "Descuento": 20.0,
+                "Total": 180.0,
+                "VehiculoMarca": "Nissan",
+                "VehiculoModelo": "Versa",
+                "VehiculoYear": 2019,
+                "Cupon": "XYZ789",
+                "Tecnico": {
+                  "Id": 2,
+                  "Nombre": "Pedro López",
+                  "NombreCompleto": "Pedro López González",
+                  "EmpleadoId": "EMP002",
+                  "Fotografia": "assets/tecnico2.jpg",
+                  "CentroServicio": "Centro Guadalajara"
+                },
+                "CentroServicioId": 0,
+                "TecnicoId": 2,
+                "CodigoEstado": "En Servicio",
+                "FechaCreacion": "2024-11-13T08:00:00Z",
+                "FechaInicio": "2024-11-11T09:00:00Z",
+                "FechaArribo": "2024-11-11T11:00:00Z",
+                "FechaTermino": "2024-11-11T13:00:00Z",
+                "MotivoCancelacion": "No se presentó el técnico.",
+                "Facturado": false,
+                "Articulo": {
+                  "Id": 2,
+                  "Nombre": "Producto X",
+                  "Descripcion": "Descripción del Producto X",
+                  "Precio": 50.0,
+                  "Cantidad": 2,
+                  "FamiliaId": 0,
+                  "Familia": "Default Familia",
+                  "MarcaId": 0,
+                  "PrecioLista": 50.0,
+                  "PrecioListaUsado": 50.0,
+                  "PrecioUsado": 50.0,
+                  "PrecioConDescuento": 45.0,
+                  "Descuento": 5.0,
+                  "DescuentoPorcentaje": 10.0,
+                  "ImagenUrl":
+                      "https://i5.walmartimages.com.mx/gr/images/product-images/img_large/00750112165705L.jpg",
+                  "GrupoId": 0,
+                  "Factor": 1.0,
+                  "Importe": 100.0,
+                  "Grupo": "Default Grupo",
+                  "ImagenUsado": "default_image_usado.jpg"
+                },
+                "FechaLimite": fechaLimite.toIso8601String(),
+              };
+
+              // Usa el provider para agregar la notificación
+              context
+                  .read<NotificationCounter>()
+                  .addNotification(notificationData);
+
+              // Navegar a la pantalla de detalles de la notificación usando navigatorKey
+              navigatorKey.currentState?.push(
+                MaterialPageRoute(
+                  builder: (context) => NotificationDetailScreen(
+                    notificationData: notificationData,
+                  ),
+                ),
+              );
+            },
+            child: Text('SN'),
+          ),
+          SizedBox(width: 0.5),
           Consumer<NotificationCounter>(
             builder: (context, counter, child) {
               return PopupMenuButton<int>(
@@ -70,69 +204,48 @@ class _ListaServiciosState extends State<ListaServicios> {
                             color: Colors.red,
                             borderRadius: BorderRadius.circular(6),
                           ),
-                          constraints: BoxConstraints(
-                            minWidth: 10,
-                            minHeight: 10,
-                          ),
+                          constraints:
+                              BoxConstraints(minWidth: 10, minHeight: 10),
                           child: Text(
                             '${counter.count}',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                            ),
+                            style: TextStyle(color: Colors.white, fontSize: 12),
                             textAlign: TextAlign.center,
                           ),
                         ),
                       ),
                   ],
                 ),
-                itemBuilder: (context) {
-                  List<PopupMenuEntry<int>> items = [];
-                  for (var i = 0; i < counter.notifications.length; i++) {
-                    var notification = counter.notifications[i];
-                    items.add(
-                      PopupMenuItem<int>(
-                        value: notification['id'],
-                        child: ListTile(
-                          leading: Icon(Icons.notifications),
-                          title: Text(notification['Servicio'] ?? 'Sin título'),
-                          subtitle:
-                              Text(notification['Cliente'] ?? 'Sin cuerpo'),
-                          trailing: PopupMenuButton<String>(
-                            icon: Icon(Icons.more_vert),
-                            onSelected: (String choice) {
-                              // Manejar la selección de opciones aquí
-                              if (choice == 'Aceptar') {
-                                print('Aceptar seleccionado');
-                                // Añadir lógica para aceptar
-                              } else if (choice == 'Rechazar') {
-                                print('Rechazar seleccionado');
-                                // Añadir lógica para rechazar
-                              }
-                            },
-                            itemBuilder: (BuildContext context) {
-                              return [
-                                PopupMenuItem<String>(
-                                  value: 'Aceptar',
-                                  child: Text('Aceptar'),
-                                ),
-                                PopupMenuItem<String>(
-                                  value: 'Rechazar',
-                                  child: Text('Rechazar'),
-                                ),
-                              ];
-                            },
+                itemBuilder: (context) =>
+                    counter.notifications.map((notification) {
+                  return PopupMenuItem<int>(
+                    value: notification['id'],
+                    child: ListTile(
+                      leading: Icon(Icons.notifications),
+                      title: Text(notification['Servicio'] ?? 'Sin título'),
+                      subtitle: Text(notification['Cliente'] ?? 'Sin cuerpo'),
+                      trailing: PopupMenuButton<String>(
+                        icon: Icon(Icons.more_vert),
+                        onSelected: (String choice) {
+                          if (choice == 'Aceptar') {
+                            print('Aceptar seleccionado');
+                          } else if (choice == 'Rechazar') {
+                            print('Rechazar seleccionado');
+                          }
+                        },
+                        itemBuilder: (BuildContext context) => [
+                          PopupMenuItem<String>(
+                            value: 'Aceptar',
+                            child: Text('Aceptar'),
                           ),
-                        ),
+                          PopupMenuItem<String>(
+                            value: 'Rechazar',
+                            child: Text('Rechazar'),
+                          ),
+                        ],
                       ),
-                    );
-
-                    if (i < counter.notifications.length - 1) {
-                      items.add(PopupMenuDivider());
-                    }
-                  }
-                  return items;
-                },
+                    ),
+                  );
+                }).toList(),
                 onSelected: (value) {
                   // Manejar la selección del ítem aquí
                 },
@@ -146,27 +259,18 @@ class _ListaServiciosState extends State<ListaServicios> {
           padding: EdgeInsets.zero,
           children: [
             DrawerHeader(
-              decoration: BoxDecoration(
-                color: PrimaryColor,
-              ),
+              decoration: BoxDecoration(color: PrimaryColor),
               child: Text(
                 'Servicios a Domicilio',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                ),
+                style: TextStyle(color: Colors.white, fontSize: 24),
               ),
             ),
             ListTile(
-              leading: Icon(Icons.home),
-              title: Text('Home'),
-              onTap: () {},
-            ),
+                leading: Icon(Icons.home), title: Text('Home'), onTap: () {}),
             ListTile(
-              leading: Icon(Icons.person),
-              title: Text('Profile'),
-              onTap: () {},
-            ),
+                leading: Icon(Icons.person),
+                title: Text('Profile'),
+                onTap: () {}),
           ],
         ),
       ),
@@ -177,9 +281,7 @@ class _ListaServiciosState extends State<ListaServicios> {
             height: 60,
             decoration: BoxDecoration(
               color: PrimaryColor,
-              borderRadius: BorderRadius.vertical(
-                bottom: Radius.circular(20),
-              ),
+              borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
             ),
             child: Padding(
               padding: const EdgeInsets.all(2.0),
@@ -190,11 +292,7 @@ class _ListaServiciosState extends State<ListaServicios> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            filter = 'Activos';
-                          });
-                        },
+                        onTap: () => setState(() => filter = 'Activos'),
                         child: Container(
                           padding:
                               EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -217,11 +315,7 @@ class _ListaServiciosState extends State<ListaServicios> {
                       ),
                       SizedBox(width: 10),
                       GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            filter = 'Historial';
-                          });
-                        },
+                        onTap: () => setState(() => filter = 'Historial'),
                         child: Container(
                           padding:
                               EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -250,90 +344,158 @@ class _ListaServiciosState extends State<ListaServicios> {
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: servicios
-                  .where((servicio) => filter == 'Activos'
-                      ? servicio.fecha
-                          .isAfter(DateTime.now().subtract(Duration(days: 1)))
-                      : servicio.fecha.isBefore(DateTime.now()))
-                  .length,
+              itemCount: serviciosFiltrados.length,
               itemBuilder: (context, index) {
-                var servicio = servicios
-                    .where((servicio) => filter == 'Activos'
-                        ? servicio.fecha
-                            .isAfter(DateTime.now().subtract(Duration(days: 1)))
-                        : servicio.fecha.isBefore(DateTime.now()))
-                    .toList()[index];
+                var servicio = serviciosFiltrados[index];
                 return Column(
                   children: [
                     ListTile(
-                      leading: Image.asset(
-                        servicio.fotografiaacumulador ??
-                            'assets/l-24mdc-140.png',
-                        height: 50,
-                        width: 50,
-                        fit: BoxFit.cover,
-                      ),
-                      title: Text(
-                        servicio.tipoServicio,
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      title: Row(
                         children: [
-                          Text(servicio.acumulador),
-                          Text(servicio.horario),
+                          // Imagen del producto (puede ser una imagen local o de red)
+                          Image.network(
+                            servicio.articulo
+                                .imagenUrl, // Asumiendo que el servicio tiene la URL de la imagen
+                            width: 60,
+                            height: 50,
+                            fit: BoxFit.cover,
+                          ),
+                          SizedBox(
+                              width:
+                                  10), // Espaciado entre la imagen y el texto
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  servicio.tipoServicio!,
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                  'Cliente: ${servicio.contacto.nombre}',
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                                Text(
+                                  'Tecnico: ${servicio.tecnico!.nombre}',
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                                Text(
+                                  'Articulo: ${servicio.articulo.nombre}',
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                                Text(
+                                  'Fecha: ${DateFormat('yyyy-MM-dd').format(servicio.fechaCreacion!)}',
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                                // Cambiar color del estado según el código
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 4), // Espaciado interno
+                                  decoration: BoxDecoration(
+                                    color: _getColorFromEstado(
+                                            servicio.codigoEstado!)
+                                        .withOpacity(0.2), // Fondo con opacidad
+                                    borderRadius: BorderRadius.circular(
+                                        12), // Esquinas redondeadas
+                                  ),
+                                  child: Text(
+                                    servicio.codigoEstado!,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: _getColorFromEstado(servicio
+                                          .codigoEstado!), // El color del texto depende del estado
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ],
                       ),
                       trailing: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Expanded(
-                            // Asegurarse de que el botón no cause desbordamiento
-                            child: ElevatedButton(
-                              onPressed: () async {
-                                await Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        DetalleMapa(servicio: servicio),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (botonesVisibles[index])
+                                ElevatedButton(
+                                  onPressed: () => aceptarServicio(index),
+                                  style: ElevatedButton.styleFrom(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 10.0, vertical: 7.0),
+                                    textStyle: TextStyle(fontSize: 12),
+                                    minimumSize: Size(60, 30),
                                   ),
-                                );
-                              },
-                              style: ElevatedButton.styleFrom(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 10.0, vertical: 7.0),
-                                textStyle: TextStyle(fontSize: 12),
-                                minimumSize: Size(60, 30),
-                              ),
-                              child: Text(
-                                'Ruta',
-                                style: TextStyle(color: Colors.black),
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 4),
-                          Text(
-                            DateFormat('yyyy-MM-dd').format(servicio.fecha),
-                            style: TextStyle(fontSize: 12),
+                                  child: Text('Aceptar',
+                                      style: TextStyle(color: Colors.black)),
+                                ),
+                              if (botonesVisibles[index]) SizedBox(width: 10),
+                              if (botonesVisibles[index])
+                                ElevatedButton(
+                                  onPressed: () => rechazarServicio(index),
+                                  style: ElevatedButton.styleFrom(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 10.0, vertical: 7.0),
+                                    textStyle: TextStyle(fontSize: 12),
+                                    minimumSize: Size(60, 30),
+                                  ),
+                                  child: Text('Rechazar',
+                                      style: TextStyle(color: Colors.black)),
+                                ),
+                              if (!botonesVisibles[index])
+                                ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              DetalleMapa(servicio: servicio)),
+                                    );
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 10.0, vertical: 7.0),
+                                    textStyle: TextStyle(fontSize: 12),
+                                    minimumSize: Size(60, 30),
+                                  ),
+                                  child: Text('Detalles',
+                                      style: TextStyle(color: Colors.black)),
+                                ),
+                            ],
                           ),
                         ],
                       ),
                     ),
                     Divider(
-                      color: Colors.grey.shade200,
-                      thickness: 1,
-                      height: 1,
-                    ),
+                        color: Colors.grey.shade200, thickness: 1, height: 1),
                   ],
                 );
               },
             ),
-          ),
+          )
         ],
       ),
     );
+  }
+
+  Color _getColorFromEstado(String estado) {
+    switch (estado) {
+      case 'Programado':
+        return Colors.blue;
+      case 'Pendiente':
+        return Colors.grey;
+      case 'En Servicio':
+        return Colors.yellow;
+      case 'Completado':
+        return Colors.green;
+      case 'Rechazado':
+        return Colors.red;
+      default:
+        return Colors.black; // Color por defecto si no se encuentra el estado
+    }
   }
 }

@@ -20,6 +20,7 @@ var api = "vacio";
 var apiIdp = "https://accounts.enersis10.com"; //idp
 Position? ubicacionInicial;
 late String user = 'vacio';
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void logout(context) async {
   final login = await SharedPreferences.getInstance();
@@ -46,29 +47,40 @@ void main() async {
     return true;
   };
 
-  // Crear instancia de NotificationCounter
-  final notificationCounter = NotificationCounter();
-
-  // Pasar NotificationCounter al PushNotificationProvider
-  final pushProvider = PushNotificationProvider(notificationCounter);
-  pushProvider.initNotifications();
-
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => notificationCounter),
+        ChangeNotifierProvider(create: (_) => NotificationCounter()),
       ],
       child: const MyApp(),
     ),
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    // Aquí, aún no tenemos acceso al `context` para navegar.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final notificationCounter = NotificationCounter();
+      final pushProvider = PushNotificationProvider(notificationCounter);
+      pushProvider
+          .initNotifications(context); // Ahora tenemos acceso al `context`
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: navigatorKey,
       home: SplashScreen(),
       debugShowCheckedModeBanner: false,
       builder: EasyLoading.init(),
